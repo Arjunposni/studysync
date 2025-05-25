@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudySync - Sign Up</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <!-- Your Firebase initialization file -->
+  <script src="firebase.js"></script>
+</head>
+<body class="bg-gradient-to-r from-blue-500 to-purple-600 min-h-screen flex items-center justify-center">
+  <!-- Signup Form -->
+  <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+    <h2 class="text-3xl font-bold text-center mb-6 text-gray-800">Sign Up</h2>
+    <form id="signup-form">
+      <!-- Email -->
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="signup-email">Email</label>
+        <input type="email" id="signup-email" placeholder="Enter your email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+      <!-- Password -->
+      <div class="mb-6">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="signup-password">Password</label>
+        <input type="password" id="signup-password" placeholder="Enter your password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+      <!-- Submit Button -->
+      <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300">Sign Up</button>
+    </form>
+    <!-- Login Link -->
+    <p class="text-center mt-4 text-gray-600">Already have an account? <a href="login.html" class="text-blue-500 hover:underline">Login</a></p>
+    <!-- Error Message -->
+    <p id="signup-error" class="text-red-500 text-center mt-4 hidden"></p>
+  </div>
+
+  <!-- Firebase and Signup Script -->
+  <script>
+    // Firebase configuration (replace with your own)
+    const firebaseConfig = {
+  apiKey: "AIzaSyD5NPfSNedNHTNriM14soBMz2Sa17e04uw",
+  authDomain: "posnidti.firebaseapp.com",
+  projectId: "posnidti",
+  storageBucket: "posnidti.firebasestorage.app",
+  messagingSenderId: "421688629086",
+  appId: "1:421688629086:web:fc6d453253af1214a361cf"
+};
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Signup Form Submission
+    const signupForm = document.getElementById('signup-form');
+    const signupError = document.getElementById('signup-error');
+
+    signupForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+
+      // Firebase Signup
+      auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          // Redirect to dashboard or home page
+          window.location.href = 'home1.html';
+        })
+        .catch((error) => {
+          signupError.textContent = error.message;
+          signupError.classList.remove('hidden');
+        });
+    });
+  </script>
+</body>
+</html>

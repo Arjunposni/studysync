@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudySync - Timetable</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase SDK (v8 compatibility version) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+<body class="bg-gray-100">
+  <!-- Navigation Bar -->
+  <nav class="bg-gradient-to-r from-blue-500 to-purple-600 shadow-md p-4 flex justify-between items-center">
+    <div class="flex items-center">
+      <img src="studysync.webp" alt="StudySync Logo" class="h-8">
+      <ul class="hidden md:flex space-x-6 ml-6">
+        <li><a href="home1.html" class="text-white hover:text-yellow-300">Home</a></li>
+        <li><a href="dashboard.html" class="text-white hover:text-yellow-300">Dashboard</a></li>
+        <li><a href="study_groups.html" class="text-white hover:text-yellow-300">Study Groups</a></li>
+        <li><a href="events.html" class="text-white hover:text-yellow-300">Events</a></li>
+        <li><a href="timetable.html" class="text-white hover:text-yellow-300">Timetable</a></li>
+        <li><a href="test.html" class="text-white hover:text-yellow-300">test</a></li>
+      </ul>
+    </div>
+    <div class="flex items-center space-x-4">
+      <input type="text" placeholder="Search" class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-300">
+      <!-- Notifications and User Dropdown (Same as before) -->
+    </div>
+  </nav>
+
+  <!-- Timetable Page Content -->
+  <main class="p-8">
+    <h1 class="text-3xl font-bold mb-8 text-blue-600">Your Timetable</h1>
+
+    <!-- Filters -->
+    <div class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Year Filter -->
+      <div>
+        <label for="year" class="block text-gray-700 font-semibold mb-2">Year</label>
+        <select id="year" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="1">1st Year</option>
+          <option value="2">2nd Year</option>
+          <option value="3">3rd Year</option>
+          <option value="4">4th Year</option>
+        </select>
+      </div>
+
+      <!-- Branch Filter -->
+      <div>
+        <label for="branch" class="block text-gray-700 font-semibold mb-2">Branch</label>
+        <select id="branch" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="cse">Computer Science</option>
+          <option value="ece">Electronics and Communication</option>
+          <option value="mech">Mechanical</option>
+          <option value="civil">Civil</option>
+        </select>
+      </div>
+
+      <!-- Section Filter -->
+      <div>
+        <label for="section" class="block text-gray-700 font-semibold mb-2">Section</label>
+        <select id="section" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="A">Section A</option>
+          <option value="B">Section B</option>
+          <option value="C">Section C</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Timetable -->
+    <div class="bg-white p-6 rounded-lg shadow-md overflow-x-auto">
+      <table class="w-full text-left" id="timetable">
+        <thead>
+          <tr class="bg-gray-100">
+            <th class="px-4 py-2">Time</th>
+            <th class="px-4 py-2">Monday</th>
+            <th class="px-4 py-2">Tuesday</th>
+            <th class="px-4 py-2">Wednesday</th>
+            <th class="px-4 py-2">Thursday</th>
+            <th class="px-4 py-2">Friday</th>
+            <th class="px-4 py-2">Saturday</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Timetable rows will be dynamically loaded here -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white py-8 text-center">
+    <p>&copy; 2023 StudySync. All rights reserved.</p>
+  </footer>
+
+  <!-- JavaScript for Dynamic Timetable -->
+  <script>
+    console
+    // Firebase configuration (replace with your own)
+    const firebaseConfig = {
+    apiKey: "AIzaSyD5NPfSNedNHTNriM14soBMz2Sa17e04uw",
+    authDomain: "posnidti.firebaseapp.com",
+    projectId: "posnidti",
+    storageBucket: "posnidti.firebasestorage.app",
+    messagingSenderId: "421688629086",
+    appId: "1:421688629086:web:fc6d453253af1214a361cf"
+};
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // Fetch timetable data based on selected filters
+    function fetchTimetable(year, branch, section) {
+      console.log('Fetching timetable for 2:', year, branch, section);
+      const timetableRef = db.collection("demo");
+       
+      timetableRef.get().then((querySnapshot) => {
+        const timetableBody = document.querySelector('#timetable tbody');
+        timetableBody.innerHTML = ''; // Clear previous content
+
+        if (querySnapshot.empty) {
+          timetableBody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-gray-600">No timetable found for the selected filters.</td></tr>';
+          return;
+        }
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const timetable = data.timetable; // Array of timetable rows
+
+          timetable.forEach((row) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td class="px-4 py-2 font-semibold">${row.time}</td>
+              <td class="px-4 py-2">${row.monday}</td>
+              <td class="px-4 py-2">${row.tuesday}</td>
+              <td class="px-4 py-2">${row.wednesday}</td>
+              <td class="px-4 py-2">${row.thursday}</td>
+              <td class="px-4 py-2">${row.friday}</td>
+              <td class="px-4 py-2">${row.saturday}</td>
+            `;
+            timetableBody.appendChild(tr);
+          });
+        });
+      }).catch((error) => {
+        console.error('Error fetching timetable:', error);
+      });
+    }
+
+    // Load timetable when filters change
+    document.addEventListener('DOMContentLoaded', () => {
+      const yearSelect = document.getElementById('year');
+      const branchSelect = document.getElementById('branch');
+      const sectionSelect = document.getElementById('section');
+
+      // Fetch timetable on page load
+      fetchTimetable(yearSelect.value, branchSelect.value, sectionSelect.value);
+
+      // Fetch timetable when filters change
+      yearSelect.addEventListener('change', () => {
+        fetchTimetable(yearSelect.value, branchSelect.value, sectionSelect.value);
+      });
+      branchSelect.addEventListener('change', () => {
+        fetchTimetable(yearSelect.value, branchSelect.value, sectionSelect.value);
+      });
+      sectionSelect.addEventListener('change', () => {
+        fetchTimetable(yearSelect.value, branchSelect.value, sectionSelect.value);
+      });
+
+    });
+  </script>
+</body>
+</html>

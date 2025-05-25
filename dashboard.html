@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudySync Dashboard</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation Bar -->
+    <nav class="bg-gradient-to-r from-blue-500 to-purple-600 shadow-md p-4 flex justify-between items-center">
+        <div class="flex items-center">
+            <img src="studysync.webp" alt="StudySync Logo" class="h-8">
+            <ul class="hidden md:flex space-x-6 ml-6">
+                <li><a href="index.html" class="text-white hover:text-yellow-300">Home</a></li>
+                <li><a href="dashboard.html" class="text-white hover:text-yellow-300">Dashboard</a></li>
+                <li><a href="study_groups.html" class="text-white hover:text-yellow-300">Study Groups</a></li>
+                <li><a href="events.html" class="text-white hover:text-yellow-300">Events</a></li>
+                <li><a href="timetable.html" class="text-white hover:text-yellow-300">TimeTable</a></li>
+                <li><a href="test.html" class="text-white hover:text-yellow-300">test</a></li>
+            </ul>
+        </div>
+        <div class="flex items-center space-x-4">
+            <input type="text" placeholder="Search" class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-300">
+            <!-- Notifications Button -->
+            <button class="notifications-button relative">
+                <svg class="h-6 w-6 text-gray-700 hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+                <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1">3</span> <!-- Notification count -->
+            </button>
+
+            <!-- Notifications Dropdown -->
+            <div id="notifications-dropdown" class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg hidden">
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold mb-4">Notifications</h3>
+                    <ul class="space-y-2">
+                        <li class="text-gray-700 hover:bg-gray-100 p-2 rounded-lg">New assignment posted for Math.</li>
+                        <li class="text-gray-700 hover:bg-gray-100 p-2 rounded-lg">Study group meeting at 5 PM.</li>
+                        <li class="text-gray-700 hover:bg-gray-100 p-2 rounded-lg">Upcoming event: Campus Hackathon.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- User Profile Dropdown -->
+            <div class="relative">
+                <img id="user-menu-button" src="user.jpg" alt="User" class="h-8 w-8 rounded-full cursor-pointer">
+                <div id="user-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden">
+                    <a href="profile.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+                    <a href="settings.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Customize Profile</a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Notifications</a>
+                    <a href="help.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Help</a>
+                    <a href="#" id="logout-link" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="p-8">
+        <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
+
+        <!-- Total Study Time Today -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-2">Total Study Time Today</h2>
+            <p class="text-2xl text-blue-600">5 hours</p>
+        </div>
+
+        <!-- Weekly Study Trend -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-2">Weekly Study Trend</h2>
+            <canvas id="weeklyStudyTrend" class="w-full h-64"></canvas>
+        </div>
+
+        <!-- Study Session Breakdown -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-2">Study Session Breakdown</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-blue-100 p-4 rounded-lg text-center">
+                    <h3 class="text-lg font-semibold">Math</h3>
+                    <p class="text-2xl text-blue-600">2 hours</p>
+                </div>
+                <div class="bg-green-100 p-4 rounded-lg text-center">
+                    <h3 class="text-lg font-semibold">Science</h3>
+                    <p class="text-2xl text-green-600">1.5 hours</p>
+                </div>
+                <div class="bg-orange-100 p-4 rounded-lg text-center">
+                    <h3 class="text-lg font-semibold">History</h3>
+                    <p class="text-2xl text-orange-600">1.5 hours</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Focus vs. Break Time Ratio -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-2">Focus vs. Break Time Ratio</h2>
+            <canvas id="focusBreakRatio" class="w-full h-64"></canvas>
+        </div>
+
+        <!-- Best Study Hours -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-2">Best Study Hours</h2>
+            <p class="text-lg">Based on your past sessions, your best study hours are:</p>
+            <ul class="list-disc list-inside mt-2">
+                <li>10 AM - 12 PM</li>
+                <li>3 PM - 5 PM</li>
+            </ul>
+        </div>
+
+        <!-- Streaks & Goals -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-2">Streaks & Goals</h2>
+            <p class="text-lg">Current Streak: <span class="font-bold text-green-600">5 days</span></p>
+            <p class="text-lg">Weekly Goal: <span class="font-bold text-blue-600">15 hours</span></p>
+        </div>
+
+        <!-- Pomodoro Timer & Study Mode -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-2">Pomodoro Timer & Study Mode</h2>
+            <p class="text-lg">Current Timer: <span class="font-bold text-red-600">25:00</span></p>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300">Start Timer</button>
+        </div>
+
+        <!-- Comparison with Peers (Optional) -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-2">Comparison with Peers</h2>
+            <p class="text-lg">You study <span class="font-bold text-blue-600">10% more</span> than your classmates on average.</p>
+        </div>
+    </div>
+
+    <!-- JavaScript for Charts and Firebase -->
+    <script>
+        // Firebase configuration (replace with your own)
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5NPfSNedNHTNriM14soBMz2Sa17e04uw",
+            authDomain: "posnidti.firebaseapp.com",
+            projectId: "posnidti",
+            storageBucket: "posnidti.firebasestorage.app",
+            messagingSenderId: "421688629086",
+            appId: "1:421688629086:web:fc6d453253af1214a361cf"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Toggle dropdown visibility
+        const userMenuButton = document.getElementById('user-menu-button');
+        const userDropdown = document.getElementById('user-dropdown');
+
+        userMenuButton.addEventListener('click', () => {
+            userDropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!userMenuButton.contains(event.target) && !userDropdown.contains(event.target)) {
+                userDropdown.classList.add('hidden');
+            }
+        });
+
+        // Log out functionality
+        document.getElementById('logout-link').addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent the default link behavior
+            auth.signOut().then(() => {
+                // Redirect to the login page after logout
+                window.location.href = 'login.html';
+            }).catch((error) => {
+                console.error("Error during logout:", error.message);
+            });
+        });
+
+        // Initialize Charts
+        const ctx1 = document.getElementById('weeklyStudyTrend').getContext('2d');
+        const weeklyStudyTrend = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Study Hours',
+                    data: [5, 3, 4, 6, 2, 5, 7],
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Hours'
+                        }
+                    }
+                }
+            }
+        });
+
+        const ctx2 = document.getElementById('focusBreakRatio').getContext('2d');
+        const focusBreakRatio = new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['Focus Time', 'Break Time'],
+                datasets: [{
+                    label: 'Time Distribution',
+                    data: [20, 5], // Example data: 20 hours focus, 5 hours break
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(255, 99, 132, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Focus vs. Break Time Ratio'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

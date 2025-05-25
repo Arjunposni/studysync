@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudySync - Previous Papers</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <!-- Navigation Bar -->
+  <nav class="bg-gradient-to-r from-blue-500 to-purple-600 shadow-md p-4 flex justify-between items-center">
+    <div class="flex items-center">
+      <img src="studysync.webp" alt="StudySync Logo" class="h-8">
+      <ul class="hidden md:flex space-x-6 ml-6">
+        <li><a href="home1.html" class="text-white hover:text-yellow-300">Home</a></li>
+        <li><a href="dashboard.html" class="text-white hover:text-yellow-300">Dashboard</a></li>
+        <li><a href="study_groups.html" class="text-white hover:text-yellow-300">Study Groups</a></li>
+        <li><a href="events.html" class="text-white hover:text-yellow-300">Events</a></li>
+        <li><a href="timetable.html" class="text-white hover:text-yellow-300">TimeTable</a></li>
+        <li><a href="test.html" class="text-white hover:text-yellow-300">test</a></li>
+      </ul>
+    </div>
+    <div class="flex items-center space-x-4">
+      <input type="text" placeholder="Search" class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-300">
+      <!-- Notifications and User Dropdown (Same as before) -->
+    </div>
+  </nav>
+
+  <!-- Previous Papers Page Content -->
+  <main class="p-8">
+    <h1 class="text-3xl font-bold mb-8 text-blue-600">Previous Papers and Repeatable Questions</h1>
+
+    <!-- Subject Selection -->
+    <div class="mb-8">
+      <label for="subject" class="block text-gray-700 font-semibold mb-2">Select Subject</label>
+      <select id="subject" class="w-full md:w-1/3 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <option value="math">Mathematics</option>
+        <option value="physics">Physics</option>
+        <option value="chemistry">Chemistry</option>
+        <option value="computer-science">Computer Science</option>
+      </select>
+    </div>
+
+    <!-- Previous Papers Section -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Previous Papers</h2>
+      <div id="papers-list" class="space-y-4">
+        <!-- Papers will be dynamically loaded here -->
+      </div>
+    </div>
+
+    <!-- Repeatable Questions Section -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-semibold mb-4">Most Repeatable Questions</h2>
+      <div id="questions-list" class="space-y-4">
+        <!-- Questions will be dynamically loaded here -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white py-8 text-center">
+    <p>&copy; 2023 StudySync. All rights reserved.</p>
+  </footer>
+
+  <!-- JavaScript for Dynamic Content -->
+  <script>
+    // Sample data for previous papers and repeatable questions
+    const papersData = {
+      math: [
+        { year: "2022", link: "https://example.com/math-2022.pdf" },
+        { year: "2021", link: "https://example.com/math-2021.pdf" },
+        { year: "2020", link: "https://example.com/math-2020.pdf" },
+      ],
+      physics: [
+        { year: "2022", link: "https://example.com/physics-2022.pdf" },
+        { year: "2021", link: "https://example.com/physics-2021.pdf" },
+      ],
+      chemistry: [
+        { year: "2022", link: "https://example.com/chemistry-2022.pdf" },
+      ],
+      "computer-science": [
+        { year: "2022", link: "https://example.com/cs-2022.pdf" },
+        { year: "2021", link: "https://example.com/cs-2021.pdf" },
+      ],
+    };
+
+    const questionsData = {
+      math: [
+        "Find the derivative of x^2 + 3x + 2.",
+        "Solve the equation: 2x + 5 = 15.",
+        "What is the value of π (pi) to 5 decimal places?",
+      ],
+      physics: [
+        "State Newton's First Law of Motion.",
+        "What is the formula for kinetic energy?",
+        "Explain the concept of gravitational force.",
+      ],
+      chemistry: [
+        "What is the atomic number of Carbon?",
+        "Balance the equation: H2 + O2 → H2O.",
+        "Define Avogadro's Law.",
+      ],
+      "computer-science": [
+        "What is the time complexity of Bubble Sort?",
+        "Explain the concept of Object-Oriented Programming.",
+        "What is a binary search tree?",
+      ],
+    };
+
+    // Function to load papers and questions based on selected subject
+    function loadContent(subject) {
+      const papersList = document.getElementById('papers-list');
+      const questionsList = document.getElementById('questions-list');
+
+      // Clear previous content
+      papersList.innerHTML = '';
+      questionsList.innerHTML = '';
+
+      // Load papers
+      if (papersData[subject]) {
+        papersData[subject].forEach((paper) => {
+          const paperItem = document.createElement('div');
+          paperItem.className = 'flex justify-between items-center bg-gray-50 p-4 rounded-lg';
+          paperItem.innerHTML = `
+            <span class="text-gray-700">${paper.year} Paper</span>
+            <a href="${paper.link}" class="text-blue-500 hover:text-blue-600" download>Download</a>
+          `;
+          papersList.appendChild(paperItem);
+        });
+      } else {
+        papersList.innerHTML = '<p class="text-gray-600">No papers available for this subject.</p>';
+      }
+
+      // Load questions
+      if (questionsData[subject]) {
+        questionsData[subject].forEach((question, index) => {
+          const questionItem = document.createElement('div');
+          questionItem.className = 'bg-gray-50 p-4 rounded-lg';
+          questionItem.innerHTML = `
+            <p class="text-gray-700"><span class="font-semibold">Q${index + 1}:</span> ${question}</p>
+          `;
+          questionsList.appendChild(questionItem);
+        });
+      } else {
+        questionsList.innerHTML = '<p class="text-gray-600">No repeatable questions available for this subject.</p>';
+      }
+    }
+
+    // Load content when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      const subjectSelect = document.getElementById('subject');
+      loadContent(subjectSelect.value); // Load default subject content
+
+      // Update content when subject changes
+      subjectSelect.addEventListener('change', (e) => {
+        loadContent(e.target.value);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudySync - Settings</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <!-- Your Firebase initialization file -->
+  <script src="firebase.js"></script>
+</head>
+<body class="bg-gray-100">
+  <!-- Navigation Bar -->
+  <nav class="bg-gradient-to-r from-blue-500 to-purple-600 shadow-md p-4 flex justify-between items-center">
+    <div class="flex items-center">
+      <img src="studysync.webp" alt="StudySync Logo" class="h-8">
+      <ul class="hidden md:flex space-x-6 ml-6">
+        <li><a href="index.html" class="text-white hover:text-yellow-300">Home</a></li>
+        <li><a href="dashboard.html" class="text-white hover:text-yellow-300">Dashboard</a></li>
+        <li><a href="study_groups.html" class="text-white hover:text-yellow-300">Study Groups</a></li>
+        <li><a href="events.html" class="text-white hover:text-yellow-300">Events</a></li>
+        <li><a href="timetable.html" class="text-white hover:text-yellow-300">TimeTable</a></li>
+        <li><a href="test.html" class="text-white hover:text-yellow-300">test</a></li>
+      </ul>
+    </div>
+    <div class="flex items-center space-x-4">
+      <input type="text" placeholder="Search" class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-300">
+      <!-- User Profile Dropdown -->
+      <div class="relative">
+        <img id="user-menu-button" src="user.jpg" alt="User" class="h-8 w-8 rounded-full cursor-pointer">
+        <!-- Dropdown Menu -->
+        <div id="user-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden">
+          <a href="profile.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+          <a href="settings.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>
+          <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Customize Profile</a>
+          <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Notifications</a>
+          <a href="help.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Help</a>
+          <a href="#" id="logout-link" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Settings Page Content -->
+  <div class="container mx-auto p-8">
+    <h1 class="text-3xl font-bold mb-8">Settings</h1>
+
+    <!-- Study Preferences Section -->
+    <section class="bg-white p-6 rounded-lg shadow-md mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Study Preferences</h2>
+      <div class="space-y-4">
+        <!-- Preferred Study Mode -->
+        <div>
+          <label class="block text-lg font-medium mb-2">Preferred Study Mode</label>
+          <select title="something" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="solo">Solo</option>
+            <option value="group">Group</option>
+            <option value="quiet">Quiet</option>
+            <option value="discussion">Discussion-Based</option>
+          </select>
+        </div>
+        <!-- Study Duration Preference -->
+        <div>
+          <label class="block text-lg font-medium mb-2">Study Duration Preference</label>
+          <select title="something" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="short">Short Sessions</option>
+            <option value="medium">Medium Sessions</option>
+            <option value="long">Long Sessions</option>
+          </select>
+        </div>
+        <!-- Best Study Time -->
+        <div>
+          <label class="block text-lg font-medium mb-2">Best Study Time (AI Suggestions)</label>
+          <select title="something" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="morning">Morning</option>
+            <option value="afternoon">Afternoon</option>
+            <option value="night">Night</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Theme & Appearance Section -->
+    <section class="bg-white p-6 rounded-lg shadow-md mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Theme & Appearance</h2>
+      <div class="space-y-4">
+        <!-- Dark Mode / Light Mode -->
+        <div>
+          <label class="block text-lg font-medium mb-2">Theme</label>
+          <div class="flex space-x-4">
+            <button class="px-4 py-2 bg-blue-500 text-white rounded-lg">Light Mode</button>
+            <button class="px-4 py-2 bg-gray-800 text-white rounded-lg">Dark Mode</button>
+          </div>
+        </div>
+        <!-- Customize Dashboard Layout -->
+        <div>
+          <label class="block text-lg font-medium mb-2">Customize Dashboard Layout</label>
+          <button class="px-4 py-2 bg-blue-500 text-white rounded-lg">Edit Layout</button>
+        </div>
+        <!-- Font Size & Accessibility Options -->
+        <div>
+          <label class="block text-lg font-medium mb-2">Font Size & Accessibility</label>
+          <input title="something" type="range" min="12" max="24" value="16" class="w-full">
+        </div>
+      </div>
+    </section>
+
+    <!-- Sync & Integrations Section -->
+    <section class="bg-white p-6 rounded-lg shadow-md mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Sync & Integrations</h2>
+      <div class="space-y-4">
+        <!-- Google Calendar / Outlook Sync -->
+        <div>
+          <label class="block text-lg font-medium mb-2">Calendar Sync</label>
+          <button class="px-4 py-2 bg-blue-500 text-white rounded-lg">Sync with Google Calendar</button>
+          <button class="px-4 py-2 bg-blue-500 text-white rounded-lg">Sync with Outlook</button>
+        </div>
+        <!-- Device Sync -->
+        <div>
+          <label class="block text-lg font-medium mb-2">Device Sync</label>
+          <button class="px-4 py-2 bg-blue-500 text-white rounded-lg">Sync Devices</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Privacy & Security Section -->
+    <section class="bg-white p-6 rounded-lg shadow-md mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Privacy & Security</h2>
+      <div class="space-y-4">
+        <!-- Who Can See My Study Activity? -->
+        <div>
+          <label class="block text-lg font-medium mb-2">Who Can See My Study Activity?</label>
+          <select title="something" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="public">Public</option>
+            <option value="friends">Friends</option>
+            <option value="private">Private</option>
+          </select>
+        </div>
+        <!-- Manage Blocked Users -->
+        <div>
+          <label class="block text-lg font-medium mb-2">Manage Blocked Users</label>
+          <button class="px-4 py-2 bg-blue-500 text-white rounded-lg">View Blocked Users</button>
+        </div>
+        <!-- Two-Factor Authentication (2FA) -->
+        <div>
+          <label class="block text-lg font-medium mb-2">Two-Factor Authentication (2FA)</label>
+          <button class="px-4 py-2 bg-blue-500 text-white rounded-lg">Enable 2FA</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white py-8 text-center">
+    <p>&copy; 2025 StudySync. All rights reserved.</p>
+  </footer>
+
+  <!-- JavaScript for Dropdown -->
+  <script>
+    const userMenuButton = document.getElementById('user-menu-button');
+    const userDropdown = document.getElementById('user-dropdown');
+
+    // Toggle dropdown visibility
+    userMenuButton.addEventListener('click', () => {
+      userDropdown.classList.toggle('hidden');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (event) => {
+      if (!userMenuButton.contains(event.target) && !userDropdown.contains(event.target)) {
+        userDropdown.classList.add('hidden');
+      }
+    });
+  </script>
+  <script>
+    // Enable editing for a specific field
+    // Firebase Initialization
+    const firebaseConfig = {
+    apiKey: "AIzaSyD5NPfSNedNHTNriM14soBMz2Sa17e04uw",
+    authDomain: "posnidti.firebaseapp.com",
+    projectId: "posnidti",
+    storageBucket: "posnidti.firebasestorage.app",
+    messagingSenderId: "421688629086",
+    appId: "1:421688629086:web:fc6d453253af1214a361cf"
+};
+
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// Check authentication state
+auth.onAuthStateChanged((user) => {
+  if (!user) {
+    // If user is not authenticated, redirect to login page
+    window.location.href = 'login.html';
+  } else {
+    // If user is authenticated, fetch profile data
+    const userId = user.uid;
+    db.collection('users').doc(userId).get()
+      .then((doc) => {
+        if (doc.exists) {
+          const data = doc.data();
+          document.getElementById('name').value = data.name || '';
+          document.getElementById('year-branch').value = data.yearBranch || '';
+          document.getElementById('hobbies').value = data.hobbies || '';
+          document.getElementById('phone').value = data.phone || '';
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching profile data:', error);
+      });
+  }
+});
+
+// Enable editing for a specific field
+function enableEdit(fieldId) {
+  const field = document.getElementById(fieldId);
+  field.removeAttribute('readonly');
+  field.focus();
+}
+
+// Save profile changes
+function saveProfile() {
+  const name = document.getElementById('name').value;
+  const yearBranch = document.getElementById('year-branch').value;
+  const hobbies = document.getElementById('hobbies').value;
+  const phone = document.getElementById('phone').value;
+
+  const userId = auth.currentUser.uid;
+  db.collection('users').doc(userId).set({
+    name,
+    yearBranch,
+    hobbies,
+    phone
+  }, { merge: true })
+    .then(() => {
+      alert('Profile saved successfully!');
+      // Set fields back to readonly after saving
+      document.getElementById('name').setAttribute('readonly', true);
+      document.getElementById('year-branch').setAttribute('readonly', true);
+      document.getElementById('hobbies').setAttribute('readonly', true);
+      document.getElementById('phone').setAttribute('readonly', true);
+    })
+    .catch((error) => {
+      console.error('Error saving profile:', error);
+      alert('Failed to save profile. Please try again.');
+    });
+}
+
+// Logout functionality
+document.getElementById('logout-link').addEventListener('click', (e) => {
+  e.preventDefault();
+  auth.signOut().then(() => {
+    window.location.href = 'login.html';
+  }).catch((error) => {
+    console.error('Logout error:', error);
+  });
+});
+  </script>
+</body>
+</html>

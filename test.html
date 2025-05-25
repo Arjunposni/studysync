@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudySync - Skills Assessment Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase SDK (v8 compatibility version) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation Bar -->
+    <nav class="bg-gradient-to-r from-blue-500 to-purple-600 shadow-md p-4 flex justify-between items-center">
+        <div class="flex items-center">
+            <img src="studysync.webp" alt="StudySync Logo" class="h-8">
+            <ul class="hidden md:flex space-x-6 ml-6">
+                <li><a href="index.html" class="text-white hover:text-yellow-300">Home</a></li>
+                <li><a href="dashboard.html" class="text-white hover:text-yellow-300">Dashboard</a></li>
+                <li><a href="study_groups.html" class="text-white hover:text-yellow-300">Study Groups</a></li>
+                <li><a href="events.html" class="text-white hover:text-yellow-300">Events</a></li>
+                <li><a href="timetable.html" class="text-white hover:text-yellow-300">TimeTable</a></li>
+                <li><a href="test.html" class="text-white hover:text-yellow-300">Test</a></li>
+            </ul>
+        </div>
+        <div class="flex items-center space-x-4">
+            <input type="text" placeholder="Search" class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-300">
+            <!-- Notifications Button -->
+            <button class="notifications-button relative">
+                <svg class="h-6 w-6 text-white hover:text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+                <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1">3</span>
+            </button>
+
+            <!-- Notifications Dropdown -->
+            <div id="notifications-dropdown" class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg hidden">
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold mb-4">Notifications</h3>
+                    <ul class="space-y-2">
+                        <li class="text-gray-700 hover:bg-gray-100 p-2 rounded-lg">New assignment posted for Math.</li>
+                        <li class="text-gray-700 hover:bg-gray-100 p-2 rounded-lg">Study group meeting at 5 PM.</li>
+                        <li class="text-gray-700 hover:bg-gray-100 p-2 rounded-lg">Upcoming event: Campus Hackathon.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- User Profile Dropdown -->
+            <div class="relative">
+                <img id="user-menu-button" src="user.jpg" alt="User " class="h-8 w-8 rounded-full cursor-pointer">
+                <div id="user-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden">
+                    <a href="profile.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+                    <a href="settings.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Customize Profile</a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Notifications</a>
+                    <a href="help.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Help</a>
+                    <a href="#" id="logout-link" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Quiz Section -->
+    <div class="bg-white shadow-md rounded-lg p-8 w-full max-w-lg mx-auto mt-8">
+        <h1 class="text-2xl font-bold mb-6 text-center">Skills Assessment Quiz</h1>
+        <form id="quiz-form" onsubmit="return false;">
+            <div class="mb-4">
+                <label for="question1" class="block text-gray-700 mb-2">1. What is the output of `console.log(typeof null)`?</label>
+                <select id="question1" name="question1" class="border border-gray-300 rounded-lg w-full p-2">
+                    <option value="">Select an answer</option>
+                    <option value="null">null</option>
+                    <option value="object">object</option>
+                    <option value="undefined">undefined</option>
+                    <option value="string">string</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="question2" class="block text-gray-700 mb-2">2. Which of the following is a valid way to declare a variable in JavaScript?</label>
+                <select id="question2" name="question2" class="border border-gray-300 rounded-lg w-full p-2">
+                    <option value="">Select an answer</option>
+                    <option value="var myVar">var myVar</option>
+                    <option value="let myVar">let myVar</option>
+                    <option value="const myVar">const myVar</option>
+                    <option value="All of the above">All of the above</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="question3" class="block text-gray-700 mb-2">3. What is the time complexity of accessing an element in an array?</label>
+                <select id="question3" name="question3" class="border border-gray-300 rounded-lg w-full p-2">
+                    <option value="">Select an answer</option>
+                    <option value="O(1)">O(1)</option>
+                    <option value="O(n)">O(n)</option>
+                    <option value="O(log n)">O(log n)</option>
+                    <option value="O(n^2)">O(n^2)</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="question4" class="block text-gray-700 mb-2">4. Which of the following is a good time management technique?</label>
+                <select id="question4" name="question4" class="border border-gray-300 rounded-lg w-full p-2">
+                    <option value="">Select an answer</option>
+                    <option value="Pomodoro Technique">Pomodoro Technique</option>
+                    <option value="Multitasking">Multitasking</option>
+                    <option value="Procrastination">Procrastination</option>
+                    <option value="None of the above">None of the above</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="question5" class="block text-gray-700 mb-2">5. What is the best way to improve memory retention?</label>
+                <select id="question5" name="question5" class="border border-gray-300 rounded-lg w-full p-2">
+                    <option value="">Select an answer</option>
+                    <option value="Repetition">Repetition</option>
+                    <option value="Cramming">Cramming</option>
+                    <option value="Ignoring">Ignoring</option>
+                    <option value="None of the above">None of the above</option>
+                </select>
+            </div>
+            <button type="button" id="submit-btn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 w-full">Submit</button>
+        </form>
+        <div id="result" class="mt-6 hidden">
+            <h2 class="text-xl font-bold mb-4">Your Results</h2>
+            <p id="score" class="text-lg"></p>
+            <div id="improvement-plan" class="mt-4">
+                <h3 class="font-semibold">Personalized Improvement Plan:</h3>
+                <ul id="suggestions" class="list-disc list-inside mt-2"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 text-center">
+        <p>&copy; 2025 StudySync. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript for Quiz Logic -->
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5NPfSNedNHTNriM14soBMz2Sa17e04uw",
+            authDomain: "posnidti.firebaseapp.com",
+            projectId: "posnidti",
+            storageBucket: "posnidti.firebasestorage.app",
+            messagingSenderId: "421688629086",
+            appId: "1:421688629086:web:fc6d453253af1214a361cf"
+        };
+        
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize form submission
+            const submitBtn = document.getElementById('submit-btn');
+            if (submitBtn) {
+                submitBtn.addEventListener('click', handleFormSubmit);
+            }
+
+            // Notifications Dropdown Toggle
+            const notificationsButton = document.querySelector('.notifications-button');
+            const notificationsDropdown = document.getElementById('notifications-dropdown');
+            
+            if (notificationsButton && notificationsDropdown) {
+                notificationsButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    notificationsDropdown.classList.toggle('hidden');
+                });
+            }
+
+            // User Dropdown Toggle
+            const userMenuButton = document.getElementById('user-menu-button');
+            const userDropdown = document.getElementById('user-dropdown');
+            
+            if (userMenuButton && userDropdown) {
+                userMenuButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('hidden');
+                });
+            }
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', (e) => {
+                if (notificationsDropdown && !notificationsButton.contains(e.target)) {
+                    notificationsDropdown.classList.add('hidden');
+                }
+                
+                if (userDropdown && !userMenuButton.contains(e.target) && !userDropdown.contains(e.target)) {
+                    userDropdown.classList.add('hidden');
+                }
+            });
+
+            // Logout functionality
+            const logoutLink = document.getElementById('logout-link');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    try {
+                        await firebase.auth().signOut();
+                        window.location.href = 'login.html';
+                    } catch (error) {
+                        console.error("Logout failed:", error);
+                        alert("Logout failed. Please try again.");
+                    }
+                });
+            }
+        });
+
+        function handleFormSubmit() {
+            console.log('Submit button clicked');
+            
+            try {
+                const answers = {
+                    question1: document.getElementById('question1').value,
+                    question2: document.getElementById('question2').value,
+                    question3: document.getElementById('question3').value,
+                    question4: document.getElementById('question4').value,
+                    question5: document.getElementById('question5').value,
+                };
+
+                console.log('Collected answers:', answers);
+
+                // Check if any question is unanswered
+                if (Object.values(answers).some(answer => !answer)) {
+                    alert('Please answer all questions before submitting!');
+                    return;
+                }
+
+                // Score calculation and display logic
+                const correctAnswers = {
+                    question1: 'object',
+                    question2: 'All of the above',
+                    question3: 'O(1)',
+                    question4: 'Pomodoro Technique',
+                    question5: 'Repetition',
+                };
+
+                let score = 0;
+                for (let question in answers) {
+                    if (answers[question] === correctAnswers[question]) {
+                        score++;
+                    }
+                }
+
+                displayResults(score, correctAnswers);
+                
+            } catch (error) {
+                console.error('Error in form submission:', error);
+                alert('There was an error processing your quiz. Please try again.');
+            }
+        }
+
+        function displayResults(score, correctAnswers) {
+            const resultDiv = document.getElementById('result');
+            const scoreDisplay = document.getElementById('score');
+            
+            if (!resultDiv || !scoreDisplay) {
+                console.error('Result display elements not found');
+                return;
+            }
+
+            scoreDisplay.textContent = `You scored ${score} out of ${Object.keys(correctAnswers).length}.`;
+            resultDiv.classList.remove('hidden');
+
+            const suggestions = document.getElementById('suggestions');
+            if (suggestions) {
+                suggestions.innerHTML = '';
+                
+                if (score < 3) {
+                    suggestions.innerHTML += '<li>Consider reviewing JavaScript fundamentals.</li>';
+                    suggestions.innerHTML += '<li>Practice time management techniques like the Pomodoro Technique.</li>';
+                    suggestions.innerHTML += '<li>Use memory aids like flashcards for better retention.</li>';
+                } else if (score < 5) {
+                    suggestions.innerHTML += '<li>Great job! Keep practicing to solidify your knowledge.</li>';
+                    suggestions.innerHTML += '<li>Explore advanced topics in JavaScript and programming.</li>';
+                } else {
+                    suggestions.innerHTML += '<li>Excellent work! Consider mentoring others or teaching what you know.</li>';
+                }
+            }
+            
+            // Scroll to results
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
